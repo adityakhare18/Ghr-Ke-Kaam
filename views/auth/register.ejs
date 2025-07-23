@@ -1,156 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %> - Service Marketplace</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-  <link href="/css/style.css" rel="stylesheet" />
-</head>
-<body class="bg-light">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="card shadow-sm mt-4">
-          <div class="card-body p-4">
-            
-            <div class="text-center mb-4">
-              <i class="fas fa-tools fa-3x text-primary mb-3"></i>
-              <h2 class="card-title">Service Marketplace</h2>
-              <p class="text-muted">Create your account to get started</p>
-            </div>
-            <% if (error) { %>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> - Service Marketplace</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="/css/style.css" rel="stylesheet" />
+  </head>
+  <body class="bg-light">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+              <div class="text-center mb-4">
+                <i class="fas fa-tools fa-3x text-primary mb-3"></i>
+                <h2 class="card-title">Service Marketplace</h2>
+                <p class="text-muted">Create your account to get started</p>
+              </div>
+              <% if (error) { %>
               <div class="alert alert-danger" role="alert">
                 <i class="fas fa-exclamation-triangle"></i> <%= error %>
               </div>
-            <% } %>
+              <% } %>
 
-            <form action="/auth/register" method="POST" id="registerForm">
-              
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="name" class="form-label">
-                      <i class="fas fa-user"></i> Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="name"
-                      name="name"
-                      value="<%= formData?.name || '' %>"
-                      placeholder="Enter your full name"
-                      required
-                    />
+              <form action="/auth/register" method="POST" id="registerForm">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="name" class="form-label">
+                        <i class="fas fa-user"></i> Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        name="name"
+                        value="<%= formData?.name || '' %>"
+                        placeholder="Enter your full name"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="email" class="form-label">
+                        <i class="fas fa-envelope"></i> Email *
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        value="<%= formData?.email || '' %>"
+                        placeholder="your.email@example.com"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="email" class="form-label">
-                      <i class="fas fa-envelope"></i> Email *
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      name="email"
-                      value="<%= formData?.email || '' %>"
-                      placeholder="your.email@example.com"
-                      required
-                    />
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">
+                    <i class="fas fa-lock"></i> Password *
+                  </label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    minlength="6"
+                    placeholder="Create a secure password"
+                    required
+                  />
+                  <div class="form-text">
+                    Password must be at least 6 characters long
                   </div>
                 </div>
+
+                <div class="mb-3">
+                  <label for="userType" class="form-label">
+                    <i class="fas fa-users"></i> I want to *
+                  </label>
+                  <select
+                    class="form-select"
+                    id="userType"
+                    name="userType"
+                    required
+                  >
+                    <option value="">Choose what you want to do...</option>
+                    <option value="customer">
+                      Book Services - I need services from providers
+                    </option>
+                    <option value="service_provider">
+                      Offer Services - I want to provide services to customers
+                    </option>
+                  </select>
+                </div>
+
+                <div class="mb-3" id="phoneDiv" style="display: none">
+                  <label for="phone" class="form-label">
+                    <i class="fas fa-phone"></i> Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone"
+                    name="phone"
+                    value="<%= formData?.phone || '' %>"
+                    placeholder="9876543210"
+                  />
+                </div>
+
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Register
+                  </button>
+                </div>
+              </form>
+
+              <div class="text-center mt-3">
+                <p class="mb-0">Already have an account?</p>
+                <a href="/auth/login" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-sign-in-alt"></i> Login Here
+                </a>
               </div>
-
-              
-              <div class="mb-3">
-                <label for="password" class="form-label">
-                  <i class="fas fa-lock"></i> Password *
-                </label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  name="password"
-                  minlength="6"
-                  placeholder="Create a secure password"
-                  required
-                />
-                <div class="form-text">Password must be at least 6 characters long</div>
-              </div>
-
-              
-              <div class="mb-3">
-                <label for="userType" class="form-label">
-                  <i class="fas fa-users"></i> I want to *
-                </label>
-                <select class="form-select" id="userType" name="userType" required>
-                  <option value="">Choose what you want to do...</option>
-                  <option value="customer" <%= formData?.userType === 'customer' ? 'selected' : '' %>>
-                    Book Services - I need services from providers
-                  </option>
-                  <option value="service_provider" <%= formData?.userType === 'service_provider' ? 'selected' : '' %>>
-                    Offer Services - I want to provide services to customers
-                  </option>
-                </select>
-              </div>
-
-             
-              <div class="mb-3" id="phoneDiv" style="display: none;">
-                <label for="phone" class="form-label">
-                  <i class="fas fa-phone"></i> Phone Number *
-                </label>
-                <input
-                  type="tel"
-                  class="form-control"
-                  id="phone"
-                  name="phone"
-                  value="<%= formData?.phone || '' %>"
-                  placeholder="9876543210"
-                />
-              </div>
-
-
-             
-              <div class="d-grid">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-user-plus"></i> Register
-                </button>
-              </div>
-            </form>
-
-            <div class="text-center mt-3">
-              <p class="mb-0">Already have an account?</p>
-              <a href="/auth/login" class="btn btn-outline-primary btn-sm">
-                <i class="fas fa-sign-in-alt"></i> Login Here
-              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.getElementById('userType').addEventListener('change', function () {
-      const phoneDiv = document.getElementById('phoneDiv');
-      const phoneInput = document.getElementById('phone');
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function togglePhone() {
+        var userType = document.getElementById("userType").value;
+        var phoneDiv = document.getElementById("phoneDiv");
+        var phoneInput = document.getElementById("phone");
 
-      if (this.value === 'service_provider') {
-        phoneDiv.style.display = 'block';
-        phoneInput.required = true;
-      } else {
-        phoneDiv.style.display = 'none';
-        phoneInput.required = false;
-        phoneInput.value = '';
+        if (userType === "service_provider") {
+          phoneDiv.style.display = "block";
+          phoneInput.required = true;
+        } else {
+          phoneDiv.style.display = "none";
+          phoneInput.required = false;
+          phoneInput.value = "";
+        }
       }
-    });
-    
-    document.addEventListener('DOMContentLoaded', function () {
-      document.getElementById('userType').dispatchEvent(new Event('change'));
-    });
-  </script>
-</body>
+      window.onload = togglePhone;
+
+      document
+        .getElementById("userType")
+        .addEventListener("change", togglePhone);
+    </script>
+  </body>
 </html>

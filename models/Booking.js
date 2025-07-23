@@ -21,6 +21,10 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    customerEmail: {
+        type:String,
+        required: true,
+    },
     customerPhone: {
         type: String,
         required: true
@@ -37,11 +41,6 @@ const bookingSchema = new mongoose.Schema({
     timeSlot: {
         type: String,
         required: true
-    },
-    status: {
-        type: String,
-        enum: ['pending', 'confirmed', 'cancelled'],
-        default: 'pending'
     }
 }, {
     timestamps: true

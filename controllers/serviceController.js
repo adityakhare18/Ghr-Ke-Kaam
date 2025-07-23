@@ -2,11 +2,6 @@ import Service from '../models/Service.js';
 
 export const getAllServices = async (req, res) => {
     try {
-        let query = {};
-        if (req.query.provider) {
-            query.createdBy = req.query.provider;
-        }
-
         const services = await Service.find(query)
             .populate('createdBy', 'name email userType')
             .sort({ createdAt: -1 });

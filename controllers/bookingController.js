@@ -9,71 +9,98 @@ export const showCreateForm = async (req, res) => {
         title: 'Book Service',
         service,
         user: req.user,
-        userType: req.user.userType,
-        userName: req.user.name
     });
 };
 
+// export const createBooking = async (req, res) => {
+//     const { serviceId, customerName,customerEmail, customerPhone, customerAddress, bookingDate, timeSlot } = req.body;
+
+//     const service = await Service.findById(serviceId);
+    
+//     const booking = new Booking({
+//     customer: req.user._id,
+//     service: serviceId,
+//     serviceProvider: service.createdBy,
+//     customerName,
+//     customerEmail,
+//     customerPhone,
+//     customerAddress, 
+//     bookingDate: new Date(bookingDate),
+//     timeSlot
+// });
+
+    
+//     await booking.save();
+//     res.redirect('/bookings');
+// };
+
+
+// POST /bookings/create
 export const createBooking = async (req, res) => {
-    const { serviceId, customerName, customerPhone, customerAddress, bookingDate, timeSlot } = req.body;
+    const {
+        serviceId,
+        customerName,
+        customerEmail,
+        customerPhone,
+        customerAddress,
+        bookingDate,
+        timeSlot,
+        requirements
+    } = req.body;
 
-    const service = await Service.findById(serviceId);
-    
-    const booking = new Booking({
-    customer: req.user._id,
-    service: serviceId,
-    serviceProvider: service.createdBy,
-    customerName,
-    customerPhone,
-    customerAddress, 
-    bookingDate: new Date(bookingDate),
-    timeSlot
-});
+    try {
+        const duplicate = await Booking.findOne({
+            customer: req.user._id,
+            service: serviceId,
+            bookingDate: new Date(bookingDate),
+            timeSlot
+        });
 
-    
-    await booking.save();
-    res.redirect('/bookings');
+        if (duplicate) {
+            return res.status(400).send('You have already booked this service for this date and time.');
+        }
+
+        const service = await Service.findById(serviceId);
+
+        const booking = new Booking({
+            customer: req.user._id,
+            service: serviceId,
+            serviceProvider: service.createdBy,
+            customerName,
+            customerEmail,
+            customerPhone,
+            customerAddress,
+            bookingDate: new Date(bookingDate),
+            timeSlot,
+            requirements
+        });
+
+        await booking.save();
+        res.redirect('/bookings');
+    } catch (error) {
+        console.error('Booking creation error:', error);
+        res.status(500).send('Something went wrong.');
+    }
 };
 
-export const getBookings = async (req, res) => {
-    let bookings = [];
-    
+
+exports.getBookings = async (req, res) => {
+  try {
+    let bookings;
+
     if (req.user.userType === 'customer') {
-        bookings = await Booking.find({ customer: req.user._id })
-            .populate('service', 'title')
-            .populate('serviceProvider', 'name phone');
+      bookings = await Booking.find({ customer: req.user._id }).populate('service serviceProvider');
     } else {
-        bookings = await Booking.find({ serviceProvider: req.user._id })
-            .populate('service', 'title')
-            .populate('customer', 'name');
+      bookings = await Booking.find({ serviceProvider: req.user._id }).populate('service customer');
     }
-    
+
     res.render('bookings/index', {
-        title: 'My Bookings',
-        bookings,
-        user: req.user,
-        userType: req.user.userType,
-        userName: req.user.name,
-        success: req.query.success,
-        accepted: req.query.accepted,
-        rejected: req.query.rejected
+      title: 'My Bookings',
+      bookings,
+      user: req.user
     });
-};
-
-export const acceptBooking = async (req, res) => {
-    const booking = await Booking.findById(req.params.id);
-    if (booking && booking.serviceProvider.toString() === req.user._id.toString()) {
-        booking.status = 'confirmed';
-        await booking.save();
-    }
-    res.redirect('/bookings');
-};
-
-export const rejectBooking = async (req, res) => {
-    const booking = await Booking.findById(req.params.id);
-    if (booking && booking.serviceProvider.toString() === req.user._id.toString()) {
-        booking.status = 'cancelled';
-        await booking.save();
-    }
-    res.redirect('/bookings');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
 };

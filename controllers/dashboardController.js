@@ -18,8 +18,6 @@ export const showDashboard = async (req, res) => {
             user: req.user,
             services,
             userServices,
-            userType: req.user.userType,
-            userName: req.user.name
         });
     } catch (error) {
         console.error('Dashboard error:', error);
@@ -32,8 +30,6 @@ export const showProfile = async (req, res) => {
         res.render('dashboard/profile', {
             title: 'Profile',
             user: req.user,
-            userType: req.user.userType,
-            userName: req.user.name
         });
     } catch (error) {
         console.error('Profile error:', error);

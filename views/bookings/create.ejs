@@ -71,6 +71,20 @@
                 </div>
 
                 <div class="mb-3">
+                  <label for="customerPhone" class="form-label"
+                    >Your Email</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="customerEmail"
+                    name="customerEmail"
+                    value="<%= user.email || '' %>"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
                   <label for="bookingDate" class="form-label">Date</label>
                   <input
                     type="date"
