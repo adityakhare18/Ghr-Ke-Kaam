@@ -12,30 +12,7 @@ export const showCreateForm = async (req, res) => {
     });
 };
 
-// export const createBooking = async (req, res) => {
-//     const { serviceId, customerName,customerEmail, customerPhone, customerAddress, bookingDate, timeSlot } = req.body;
 
-//     const service = await Service.findById(serviceId);
-    
-//     const booking = new Booking({
-//     customer: req.user._id,
-//     service: serviceId,
-//     serviceProvider: service.createdBy,
-//     customerName,
-//     customerEmail,
-//     customerPhone,
-//     customerAddress, 
-//     bookingDate: new Date(bookingDate),
-//     timeSlot
-// });
-
-    
-//     await booking.save();
-//     res.redirect('/bookings');
-// };
-
-
-// POST /bookings/create
 export const createBooking = async (req, res) => {
     const {
         serviceId,
@@ -84,7 +61,7 @@ export const createBooking = async (req, res) => {
 };
 
 
-exports.getBookings = async (req, res) => {
+export const getBookings = async (req, res) => {
   try {
     let bookings;
 
