@@ -57,25 +57,4 @@ bookingSchema.methods.getFormattedDate = function() {
     });
 };
 
-
-bookingSchema.methods.getStatusDisplay = function() {
-    const statusMap = {
-        'pending': 'Pending',
-        'confirmed': 'Confirmed',
-        'completed': 'Completed',
-        'cancelled': 'Cancelled'
-    };
-    return statusMap[this.status];
-};
-
-bookingSchema.methods.getStatusColor = function() {
-    const colorMap = {
-        'pending': 'warning',
-        'confirmed': 'success',
-        'completed': 'primary',
-        'cancelled': 'danger'
-    };
-    return colorMap[this.status];
-};
-
 export default mongoose.model('Booking', bookingSchema);
