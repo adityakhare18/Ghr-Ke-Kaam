@@ -26,6 +26,21 @@ export const createBooking = async (req, res) => {
     } = req.body;
 
     try {
+        const service = await Service.findById(serviceId).populate('createdBy', 'name phone');
+        if (!service) {
+            return res.redirect('/services');
+        }
+
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(customerPhone)) {
+            return res.status(400).render('bookings/create', {
+                title: 'Book Service',
+                service,
+                user: req.user,
+                error: 'Enter a valid 10-digit phone number.'
+            });
+        }
+
         const duplicate = await Booking.findOne({
             customer: req.user._id,
             service: serviceId,
@@ -34,10 +49,22 @@ export const createBooking = async (req, res) => {
         });
 
         if (duplicate) {
-            return res.status(400).send('You have already booked this service for this date and time.');
+            return res.status(400).render('bookings/create', {
+                title: 'Book Service',
+                service,
+                user: req.user,
+                error: 'You have already booked this service for this date and time.'
+            });
         }
 
-        const service = await Service.findById(serviceId);
+        if (new Date(bookingDate).getTime() < Date.now()) {
+            return res.status(400).render('bookings/create', {
+                title: 'Book Service',
+                service,
+                user: req.user,
+                error: 'Enter future date.'
+            });
+        }
 
         const booking = new Booking({
             customer: req.user._id,
@@ -56,10 +83,14 @@ export const createBooking = async (req, res) => {
         res.redirect('/bookings');
     } catch (error) {
         console.error('Booking creation error:', error);
-        res.status(500).send('Something went wrong.');
+        res.status(500).render('bookings/create', {
+            title: 'Book Service',
+            service: await Service.findById(req.body.serviceId).populate('createdBy', 'name phone'),
+            user: req.user,
+            error: 'Something went wrong. Please try again.'
+        });
     }
 };
-
 
 export const getBookings = async (req, res) => {
   try {

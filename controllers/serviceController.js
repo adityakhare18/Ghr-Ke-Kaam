@@ -2,7 +2,7 @@ import Service from '../models/Service.js';
 
 export const getAllServices = async (req, res) => {
     try {
-        const services = await Service.find(query)
+        const services = await Service.find(req.query)
             .populate('createdBy', 'name email userType')
             .sort({ createdAt: -1 });
 
@@ -86,6 +86,18 @@ export const createService = async (req, res) => {
 
         if (req.file) {
             serviceData.photo = `/uploads/${req.file.filename}`;
+        }
+
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(contactPhone)) {
+            return res.status(400).render('services/create', {
+                title: 'Create Service',
+                user: req.user,
+                userType: req.user.userType,
+                userName: req.user.name,
+                error:'Enter a valid 10-digit phone number.',
+                formData: req.body
+            });
         }
 
         const service = new Service(serviceData);

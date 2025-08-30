@@ -8,7 +8,7 @@ export const showLogin = (req, res) => {
     res.render('auth/login', {
         title: 'Login',
         error: null,
-        formData: {} 
+        formData: {} //use for prefill the data whenever any error come like wrong password entered by user(optional)
     });
 };
 
@@ -49,6 +49,7 @@ export const register = async (req, res) => {
         await user.save(); 
 
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
+
         res.cookie('token', token, {
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000
