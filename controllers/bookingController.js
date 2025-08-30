@@ -57,6 +57,20 @@ export const createBooking = async (req, res) => {
             });
         }
 
+        const allReadyBooked = await Booking.findOne({
+            service: serviceId,
+            bookingDate: new Date(bookingDate),
+            timeSlot
+        });
+        if(allReadyBooked){
+            return res.status(400).render('bookings/create', {
+                title: 'Book Service',
+                service,
+                user: req.user,
+                error: 'This Service is already booked for this date and time.'
+            });
+        }
+
         if (new Date(bookingDate).getTime() < Date.now()) {
             return res.status(400).render('bookings/create', {
                 title: 'Book Service',
