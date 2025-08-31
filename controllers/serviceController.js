@@ -1,4 +1,7 @@
 import Service from '../models/Service.js';
+import fs from 'fs';
+import cloudinary from '../config/cloudinary.js';
+import path from 'path'
 
 export const getAllServices = async (req, res) => {
     try {
@@ -40,82 +43,99 @@ export const showCreateForm = async (req, res) => {
 };
 
 
-
 export const createService = async (req, res) => {
-    try {
-        if (req.user.userType !== 'service_provider') {
-            return res.redirect('/dashboard');
-        }
-
-        const {
-            title,
-            description,
-            category,
-            price,
-            priceType,
-            location,
-            contactPhone,
-            contactEmail,
-            status
-        } = req.body;
-
-        if (!title || !description || !category || !price || !priceType || !location) {
-            return res.render('services/create', {
-                title: 'Create Service',
-                user: req.user,
-                userType: req.user.userType,
-                userName: req.user.name,
-                error: 'Please fill in all required fields',
-                formData: req.body
-            });
-        }
-
-        const serviceData = {
-            title,
-            description,
-            category,
-            price,
-            priceType,
-            location,
-            createdBy: req.user._id,
-            providerName: req.user.name,
-            contactPhone: contactPhone || req.user.phone,
-            contactEmail: contactEmail || req.user.email,
-            status: status || 'available'
-        };
-
-        if (req.file) {
-            serviceData.photo = `/uploads/${req.file.filename}`;
-        }
-
-        const phoneRegex = /^[0-9]{10}$/;
-        if (!phoneRegex.test(contactPhone)) {
-            return res.status(400).render('services/create', {
-                title: 'Create Service',
-                user: req.user,
-                userType: req.user.userType,
-                userName: req.user.name,
-                error:'Enter a valid 10-digit phone number.',
-                formData: req.body
-            });
-        }
-
-        const service = new Service(serviceData);
-        await service.save();
-
-        res.redirect('/services');
-    } catch (error) {
-        console.error('Create service error:', error);
-        res.render('services/create', {
-            title: 'Create Service',
-            user: req.user,
-            userType: req.user.userType,
-            userName: req.user.name,
-            error: 'An error occurred while creating the service',
-            formData: req.body
-        });
+  try {
+    if (req.user.userType !== 'service_provider') {
+      return res.redirect('/dashboard');
     }
+
+    const {
+      title,
+      description,
+      category,
+      price,
+      priceType,
+      location,
+      contactPhone,
+      contactEmail,
+      status,
+    } = req.body;
+
+    if (!title || !description || !category || !price || !priceType || !location) {
+      return res.render('services/create', {
+        title: 'Create Service',
+        user: req.user,
+        userType: req.user.userType,
+        userName: req.user.name,
+        error: 'Please fill in all required fields',
+        formData: req.body,
+      });
+    }
+
+    let photoUrl = null;
+
+    if (req.file) {
+        console.log(req.file.path);
+        
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'services',
+      });
+      photoUrl = result.secure_url;
+
+      const filePath = path.join(process.cwd(), req.file.path); 
+      fs.unlink(filePath, (err) => {
+        if (err) console.error('Failed to delete local file:', err);
+    });
+
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (contactPhone && !phoneRegex.test(contactPhone)) {
+      return res.status(400).render('services/create', {
+        title: 'Create Service',
+        user: req.user,
+        userType: req.user.userType,
+        userName: req.user.name,
+        error: 'Enter a valid 10-digit phone number.',
+        formData: req.body,
+      });
+    }
+
+    const serviceData = {
+      title,
+      description,
+      category,
+      price,
+      priceType,
+      location,
+      createdBy: req.user._id,
+      providerName: req.user.name,
+      contactPhone: contactPhone || req.user.phone,
+      contactEmail: contactEmail || req.user.email,
+      status: status || 'available',
+      photo: photoUrl, 
+    };
+
+
+    const service = new Service(serviceData);
+    await service.save();
+    
+
+    res.redirect('/services');
+  } catch (error) {
+    console.error('Create service error:', error);
+    res.render('services/create', {
+      title: 'Create Service',
+      user: req.user,
+      userType: req.user.userType,
+      userName: req.user.name,
+      error: 'An error occurred while creating the service',
+      formData: req.body,
+    });
+  }
 };
+
+
 
 export const getService = async (req, res) => {
     try {
@@ -211,7 +231,22 @@ export const updateService = async (req, res) => {
         service.status = status || 'available';
 
         if (req.file) {
-            service.photo = `/uploads/${req.file.filename}`;
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'services',
+            });
+            // Delete previous image from Cloudinary if exists
+            if (service.photo && service.photo.includes('cloudinary')) {
+                const publicId = service.photo.split('/').pop().split('.')[0];
+                await cloudinary.uploader.destroy(publicId);
+            }
+            
+            service.photo = result.secure_url;
+            
+            // Delete local file
+            const filePath = path.join(process.cwd(), req.file.path);
+            fs.unlink(filePath, (err) => {
+                if (err) console.error('Failed to delete local file:', err);
+            });
         }
 
         await service.save();

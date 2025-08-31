@@ -36,7 +36,10 @@ const serviceSchema = new mongoose.Schema({
     providerName: String,
     contactPhone: String,
     contactEmail: String,
-    photo: String,
+    photo: {
+        type: String,
+        maxlength: 1000 // Ensure enough space for full Cloudinary URLs
+    },
     status: {
         type: String,
         enum: ['available', 'busy', 'unavailable'],
