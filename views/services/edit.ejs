@@ -49,7 +49,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="title" class="form-label"><i class="fas fa-heading"></i> Service Title *</label>
-                                        <input type="text" class="form-control" id="title" name="title" value="<%= service.title %>" required>
+                                        <input type="text" class="form-control" id="title" name="title" value="<%= service.title %>" required readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -60,7 +60,7 @@
                                         </label>
                                         <input type="text" class="form-control" id="category" name="category"
                                                value="<%= service.category %>"
-                                               placeholder="e.g., Cleaning, Plumbing, Tutoring" required>
+                                               placeholder="e.g., Cleaning, Plumbing, Tutoring" required readonly>
                                         <div class="form-text">What type of service do you provide?</div>
                                     </div>
                                 </div>
@@ -140,7 +140,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="contactEmail" class="form-label"><i class="fas fa-envelope"></i> Contact Email</label>
-                                        <input type="email" class="form-control" id="contactEmail" name="contactEmail" value="<%= service.contactEmail || '' %>">
+                                        <input type="email" class="form-control" id="contactEmail" name="contactEmail" value="<%= service.contactEmail || '' %>" readonly>
                                     </div>
                                 </div>
                             </div>

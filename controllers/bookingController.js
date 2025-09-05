@@ -14,31 +14,21 @@ export const showCreateForm = async (req, res) => {
 
 
 export const createBooking = async (req, res) => {
-    const {
-        serviceId,
-        customerName,
-        customerEmail,
-        customerPhone,
-        customerAddress,
-        bookingDate,
-        timeSlot,
-        requirements
-    } = req.body;
-
     try {
+        const {
+            serviceId,
+            customerName,
+            customerEmail,
+            customerPhone,
+            customerAddress,
+            bookingDate,
+            timeSlot,
+            requirements
+        } = req.body;
+
         const service = await Service.findById(serviceId).populate('createdBy', 'name phone');
         if (!service) {
             return res.redirect('/services');
-        }
-
-        const phoneRegex = /^[0-9]{10}$/;
-        if (!phoneRegex.test(customerPhone)) {
-            return res.status(400).render('bookings/create', {
-                title: 'Book Service',
-                service,
-                user: req.user,
-                error: 'Enter a valid 10-digit phone number.'
-            });
         }
 
         const duplicate = await Booking.findOne({
@@ -77,6 +67,16 @@ export const createBooking = async (req, res) => {
                 service,
                 user: req.user,
                 error: 'Enter future date.'
+            });
+        }
+
+        const phoneRegex = /^[0-9]{10}$/;
+        if (contactPhone && !phoneRegex.test(contactPhone)) {
+            return  res.status(400).render('bookings/create', {
+                title: 'Book Service',
+                service,
+                user: req.user,
+                error: 'Enter a valid 10 digit number.'
             });
         }
 
