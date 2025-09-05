@@ -80,6 +80,16 @@ export const createBooking = async (req, res) => {
             });
         }
 
+        if (customerAddress.length < 10) {
+            return res.status(400).render('bookings/create', {
+                title: 'Book Service',
+                service,
+                user: req.user,
+                error: 'Address must be at least 10 characters long.'
+            });
+        }
+
+
         const booking = new Booking({
             customer: req.user._id,
             service: serviceId,
